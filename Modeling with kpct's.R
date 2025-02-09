@@ -8,5 +8,7 @@ model <- glm(k ~ bat_kpct + pit_kpct,
 summary(model)
 
 
+predict(model, newdata= data.frame(bat_kpct = .30, pit_kpct = .17))
+
 
 
