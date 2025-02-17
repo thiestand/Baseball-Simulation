@@ -1,19 +1,14 @@
 ## Modeling PA's end in a K using bat_kpct and pit_kpct
 
-# Set minimum PA
-
-pa_min <- 100
 
 season_2024 <- read.csv("percentages_added.csv")
 
 # Filter out players without minimum PA
 
 model <- season_2024 |>
-  filter(bat_pa >= pa_min,
-         pit_pa >= pa_min) |>
-  glm(k ~ bat_kpct + pit_kpct,
-             family = binomial,
-             data = _)
+  glm(k ~ bat_kpct + pit_kpct + samehand,
+      family = binomial,
+      data = _)
 summary(model)
 
 
