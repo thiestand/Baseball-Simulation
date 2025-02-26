@@ -1,28 +1,18 @@
 season_2024 <- read.csv("season_2024.csv")
 
-sim_pa <- function(bat = "duraj001", pit = "canng001") {
+# Have user read data into R outside the function
+# Include an argument to read the data in
+
+batters <- read.csv("https://raw.githubusercontent.com/thiestand/Baseball-Simulation/refs/heads/main/batter_data.csv")
+pitchers <- read.csv("https://raw.githubusercontent.com/thiestand/Baseball-Simulation/refs/heads/main/pitcher_data.csv")
+
+sim_pa <- function(bat = "duraj001", pit = "canng001", 
+                   bat_data = batters, pit_data = pitchers,
+                   output = "result") {
   
-  batter <- season_2024 |>
-    filter(batter == bat) |>
-    summarize(bat_kpct = mean(k), 
-              bat_fbpct = mean(free_base),
-              bat_1Bpct = mean(single),
-              bat_2Bpct = mean(double),
-              bat_3Bpct = mean(triple),
-              bat_HRpct = mean(hr),
-              bat_ipoutpct = mean(ip_out),
-              .by = bathand)
-  pitcher <- season_2024 |>
-    filter(pitcher == pit) |>
-    summarize(pit_kpct = mean(k), 
-              pit_fbpct = mean(free_base),
-              pit_1Bpct = mean(single),
-              pit_2Bpct = mean(double),
-              pit_3Bpct = mean(triple),
-              pit_HRpct = mean(hr),
-              pit_ipoutpct = mean(ip_out),
-              .by = pithand)
-  
+  batter <- filter(batters, batter == bat)
+  pitcher <- filter(pitchers, pitcher == pit)
+    
   samehand <- batter$bathand == pitcher$pithand
   
   pred_k <- -3.91984 + 5.93173*batter$bat_kpct + 5.79395*pitcher$pit_kpct + 0.07264*samehand
@@ -33,7 +23,7 @@ sim_pa <- function(bat = "duraj001", pit = "canng001") {
   
   pred_1B <- -4.19363  + 8.32839*batter$bat_1Bpct + 8.47410*pitcher$pit_1Bpct + 0.03093*samehand
   pred_1B <- exp(pred_1B) / (1 + exp(pred_1B))
-
+  
   pred_2B <- -5.21054  + 24.99990*batter$bat_2Bpct + 24.16751*pitcher$pit_2Bpct - 0.08040*samehand
   pred_2B <- exp(pred_2B) / (1 + exp(pred_2B))
   
@@ -56,10 +46,26 @@ sim_pa <- function(bat = "duraj001", pit = "canng001") {
   pred_HR <- pred_HR / pred_total
   pred_ipout <- pred_ipout / pred_total
   
-  print(batter)
-  print(pitcher)
+  props <- data.frame(out_ip = pred_ipout,
+                      k = pred_k,
+                      single = pred_1B,
+                      fb = pred_fb,
+                      double = pred_2B,
+                      homer = pred_HR,
+                      triple = pred_3B)
+  rn <- runif(1)
   
+  props2 <- props |> t() |> cumsum()
+  
+  # Use case_when() to determine the outcome.
+  # Use the order ipout, k, 1b, fb, 2b, hr, 3b
+  
+  result <- case_when(rn < props2[1] ~ "in play out")
+  
+  print(props)
+  print(result)
+
 }
 
-sim_pa()
+sim_pa(bat = "arral001", pit = "corbp001")
 
