@@ -12,28 +12,28 @@ sim_pa <- function(bat = "duraj001", pit = "canng001",
   
   batter <- filter(batters, batter == bat)
   pitcher <- filter(pitchers, pitcher == pit)
-    
+  
   samehand <- batter$bathand == pitcher$pithand
   
-  pred_k <- -3.91984 + 5.93173*batter$bat_kpct + 5.79395*pitcher$pit_kpct + 0.07264*samehand
+  pred_k <- -3.92052 + 5.73134*batter$bat_kpct + 5.75805*pitcher$pit_kpct + 0.07522*samehand
   pred_k <- exp(pred_k) / (1 + exp(pred_k))
   
-  pred_fb <- -4.39809 + 11.42124*batter$bat_fbpct + 11.81275 *pitcher$pit_fbpct - 0.17712*samehand
+  pred_fb <- -4.29556 + 11.11392*batter$bat_fbpct + 10.38869 *pitcher$pit_fbpct - 0.16132*samehand
   pred_fb <- exp(pred_fb) / (1 + exp(pred_fb))
   
-  pred_1B <- -4.19363  + 8.32839*batter$bat_1Bpct + 8.47410*pitcher$pit_1Bpct + 0.03093*samehand
+  pred_1B <- -4.13821  + 8.21707*batter$bat_1Bpct + 7.87822*pitcher$pit_1Bpct + 0.02929*samehand
   pred_1B <- exp(pred_1B) / (1 + exp(pred_1B))
   
-  pred_2B <- -5.21054  + 24.99990*batter$bat_2Bpct + 24.16751*pitcher$pit_2Bpct - 0.08040*samehand
+  pred_2B <- -4.86874  + 21.82715*batter$bat_2Bpct + 18.54212*pitcher$pit_2Bpct - 0.08984*samehand
   pred_2B <- exp(pred_2B) / (1 + exp(pred_2B))
   
-  pred_3B <- -7.46952  + 170.10647*batter$bat_3Bpct + 183.24317*pitcher$pit_3Bpct - 0.06724*samehand
+  pred_3B <- -6.85267  + 131.42274*batter$bat_3Bpct + 112.69379*pitcher$pit_3Bpct - 0.12138*samehand
   pred_3B <- exp(pred_3B) / (1 + exp(pred_3B))
   
-  pred_HR <- -5.47323  + 32.11120*batter$bat_HRpct + 32.16880*pitcher$pit_HRpct - 0.13588*samehand
+  pred_HR <- -5.16375  + 30.62259*batter$bat_HRpct + 22.53312*pitcher$pit_HRpct - 0.13722*samehand
   pred_HR <- exp(pred_HR) / (1 + exp(pred_HR))
   
-  pred_ipout <- -5.47323  + 32.11120*batter$bat_ipoutpct + 32.16880*pitcher$pit_ipoutpct - 0.13588*samehand
+  pred_ipout <- -3.966211  + 4.095392*batter$bat_ipoutpct + 4.122515*pitcher$pit_ipoutpct + 0.019550*samehand
   pred_ipout <- exp(pred_ipout) / (1 + exp(pred_ipout))
   
   
@@ -60,12 +60,17 @@ sim_pa <- function(bat = "duraj001", pit = "canng001",
   # Use case_when() to determine the outcome.
   # Use the order ipout, k, 1b, fb, 2b, hr, 3b
   
-  result <- case_when(rn < props2[1] ~ "in play out")
+  result <- case_when(rn < props2[1] ~ "In Play, Out",
+                      rn > props2[1] & rn < props2[2] ~ "Strikeout",
+                      rn > props2[2] & rn < props2[3] ~ "Single",
+                      rn > props2[3] & rn < props2[4] ~ "Walk",
+                      rn > props2[4] & rn < props2[5] ~ "Double",
+                      rn > props2[5] & rn < props2[6] ~ "Home Run",
+                      rn > props2[6] & rn < props2[7] ~ "Triple")
   
   print(props)
   print(result)
-
+  
 }
 
 sim_pa(bat = "arral001", pit = "corbp001")
-

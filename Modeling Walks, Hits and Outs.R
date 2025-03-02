@@ -44,7 +44,7 @@ model_free_base <- season_2024 |>
       data = _)
 summary(model_free_base)
 
-pred_free_base <- predict(model_free_base, 
+pred_fb <- predict(model_free_base, 
         newdata= data.frame(bat_fbpct = .11, pit_fbpct = .07, samehand = "yes"),
         type = "response")
 
@@ -55,7 +55,7 @@ model_single <- season_2024 |>
       data = _)
 summary(model_single)
 
-pred_single <- predict(model_single, 
+pred_1B <- predict(model_single, 
         newdata= data.frame(bat_1Bpct = .15, pit_1Bpct = .12, samehand = "yes"),
         type = "response")
 
@@ -66,7 +66,7 @@ model_double <- season_2024 |>
       data = _)
 summary(model_double)
 
-pred_double <- predict(model_double, 
+pred_2B <- predict(model_double, 
                        newdata= data.frame(bat_2Bpct = .02, pit_2Bpct = .06, samehand = "yes"),
                        type = "response")
 
@@ -77,7 +77,7 @@ model_triple <- season_2024 |>
       data = _)
 summary(model_triple)
 
-pred_triple <- predict(model_triple, 
+pred_3B <- predict(model_triple, 
                        newdata= data.frame(bat_3Bpct = .01, pit_3Bpct = .01, samehand = "yes"),
                        type = "response")
 
@@ -88,13 +88,13 @@ model_hr <- season_2024 |>
       data = _)
 summary(model_hr)
 
-pred_hr <- predict(model_hr, 
+pred_HR <- predict(model_hr, 
         newdata= data.frame(bat_HRpct = .02, pit_HRpct = .04, samehand = "yes"),
         type = "response")
 
 # Out Model
 model_ipout <- season_2024 |>
-  glm(out ~ bat_ipoutpct + pit_ipoutpct + samehand,
+  glm(ip_out ~ bat_ipoutpct + pit_ipoutpct + samehand,
       family = binomial,
       data = _)
 summary(model_ipout)
