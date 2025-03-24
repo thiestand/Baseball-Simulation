@@ -6,12 +6,12 @@ season_2024 <- read.csv("season_2024.csv")
 batters <- read.csv("https://raw.githubusercontent.com/thiestand/Baseball-Simulation/refs/heads/main/batter_data.csv")
 pitchers <- read.csv("https://raw.githubusercontent.com/thiestand/Baseball-Simulation/refs/heads/main/pitcher_data.csv")
 
-sim_pa <- function(bat = "duraj001", pit = "canng001", 
+sim_pa <- function(bat = "Jarren Duran", pit = "Griffin Canning", 
                    bat_data = batters, pit_data = pitchers,
                    output = "result") {
   
-  batter <- filter(batters, batter == bat)
-  pitcher <- filter(pitchers, pitcher == pit)
+  batter <- filter(bat_data, name == bat)
+  pitcher <- filter(pit_data, name == pit)
   
   samehand <- batter$bathand == pitcher$pithand
   
@@ -68,9 +68,11 @@ sim_pa <- function(bat = "duraj001", pit = "canng001",
                       rn > props2[5] & rn < props2[6] ~ "Home Run",
                       rn > props2[6] & rn < props2[7] ~ "Triple")
   
+  
   print(props)
   print(result)
   
 }
 
-sim_pa(bat = "arral001", pit = "corbp001")
+sim_pa(bat = "Luiz Arraez", pit = "Patrick Corbin")
+
