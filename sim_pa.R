@@ -8,7 +8,7 @@ pitchers <- read.csv("https://raw.githubusercontent.com/thiestand/Baseball-Simul
 
 sim_pa <- function(bat = "Jarren Duran", pit = "Griffin Canning", 
                    bat_data = batters, pit_data = pitchers,
-                   output = "result") {
+                   print = "none") {
   
   batter <- filter(bat_data, name == bat)
   pitcher <- filter(pit_data, name == pit)
@@ -68,11 +68,29 @@ sim_pa <- function(bat = "Jarren Duran", pit = "Griffin Canning",
                       rn > props2[5] & rn < props2[6] ~ "Home Run",
                       rn > props2[6] & rn < props2[7] ~ "Triple")
   
+  if (print == "props") {
+    print(props)
+  }
   
-  print(props)
-  print(result)
+  if (print == "result") {
+    if (result == "Strikeout") {
+      print(paste(bat, "struck out against", pit))
+    }
+    else if (result == "In Play, Out") {
+      print(paste(bat, "gets out against", pit))
+    }
+    else if (result == "Walk") {
+      print(paste(bat, "takes a walk against", pit))
+    }
+    else {
+      print(paste(bat, "hits a", result, "against", pit))
+    }
+    
+  }
+  
+  result
   
 }
 
-sim_pa(bat = "Luiz Arraez", pit = "Patrick Corbin")
+sim_pa(bat = "Aaron Judge", pit = "Patrick Corbin", print = "result")
 
