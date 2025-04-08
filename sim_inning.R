@@ -1,8 +1,28 @@
 library(tidyverse)
 
-lineup <- c("Ian Happ", "Seiya Suzuki", "Kyle Tucker", 
+cubs_lineup <- c("Ian Happ", "Seiya Suzuki", "Kyle Tucker", 
             "Michael Busch", "Dansby Swanson", "Miguel Amaya", 
-            "Mike Tauchman", "Nico Hoerner", "Justin Turner")
+            "Pete Crow-Armstrong", "Nico Hoerner", "Justin Turner")
+
+yanks_lineup <- c("Austin Wells", "Juan Soto", "Aaron Judge",
+                  "Giancarlo Stanton", "Anthony Rizzo", "Gleyber Torres",
+                  "Alex Verdugo", "Anthony Volpe", "Oswald Cabrera")
+
+dodgers_lineup <- c("Mookie Betts", "Shohei Ohtani", "Freddie Freeman", 
+                           "Teoscar Hernandez", "Tommy Edman", "Will Smith",
+                           "James Outman", "Max Muncy", "Chris Taylor")
+
+cubs <- tibble(cubs_lineup)
+
+dodgers <- tibble(dodgers_lineup)
+
+yankees <- tibble(yanks_lineup)
+
+lineups <- bind_cols(
+  tibble(Cubs = cubs_lineup),
+  tibble(Yankees = yanks_lineup),
+  tibble(Dodgers = dodgers_lineup)
+)
 
 sim_inning <- function (lineup = "Aaron Judge", pit = "Paul Skenes", spot = 1) {
   pas <- 0
@@ -19,7 +39,7 @@ sim_inning <- function (lineup = "Aaron Judge", pit = "Paul Skenes", spot = 1) {
   }
   
   while(out < 3) {
-    pa <- sim_pa(bat = lineup[spot], pit = pit, print = "result")
+    pa <- sim_pa(bat = lineup[spot], pit = pit, print = "none")
     pas <- pas + 1
     results[pas] <- pas
     
@@ -163,14 +183,22 @@ sim_inning <- function (lineup = "Aaron Judge", pit = "Paul Skenes", spot = 1) {
   }
   
 
-  print(paste("Plate Appearances: ", pas))
+  #print(paste("Plate Appearances: ", pas))
   #print(paste("Runs: ", runs))
   #print(paste("First: ", first))
   #print(paste("Second: ", second))
   #print(paste("Third: ", third))
-  print(paste(hits, "hit(s) and", runs, "run(s),", lineup[spot], "due up next"))
+  #print(paste(hits, "hit(s) and", runs, "run(s),", lineup[spot], "due up next"))
+  #list(runs = runs,
+  #     hits = hits)
+  
+  # Hides the output and instead, just prints the result of the inning
+  invisible(list(hits = hits, 
+                 runs = runs, 
+                 due_up = lineup[spot],
+                 spot = spot))
   
 }
 
-sim_inning(lineup = lineup, pit = "Zac Gallen")
+sim_inning(lineup = cubs_lineup, pit = "Sonny Gray")
 
