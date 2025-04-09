@@ -33,7 +33,8 @@ sim_inning <- function (lineup = "Aaron Judge", pit = "Paul Skenes", spot = 1) {
   third <- 0
   runs <- 0
   hits <- 0
-  
+  box_score <- <UPDATE THIS TO CREATE OBJECT WITH NULL FOR EACH VARIABLE>
+            
   if (length(lineup < 9)) {
     lineup <- rep(lineup, length.out = 9)
   }
@@ -41,6 +42,11 @@ sim_inning <- function (lineup = "Aaron Judge", pit = "Paul Skenes", spot = 1) {
   while(out < 3) {
     pa <- sim_pa(bat = lineup[spot], pit = pit, print = "none")
     pas <- pas + 1
+    box_score <- rbind(box_score,
+            data.frame(pa = pas,
+                      pitcher = pit,
+                      hitter = lineup[spot],
+                      result = pa))
     results[pas] <- pas
     
     # Adding Outs
@@ -193,7 +199,8 @@ sim_inning <- function (lineup = "Aaron Judge", pit = "Paul Skenes", spot = 1) {
   #     hits = hits)
   
   # Hides the output and instead, just prints the result of the inning
-  invisible(list(hits = hits, 
+  invisible(list(box_score = box_score,
+                 hits = hits, 
                  runs = runs, 
                  due_up = lineup[spot],
                  spot = spot))
