@@ -3,6 +3,7 @@ library(tidyverse)
 spot <- 1
 hits <- 0
 runs <- 0
+box <- <UPDATE THIS TO CREATE OBJECT WITH NULL FOR EACH VARIABLE, INCLUDE INNING COLUMN>
 
 sim_game <- function (){
   
@@ -16,7 +17,7 @@ sim_game <- function (){
    # if (inn == 9) {
    #  print(paste("Final Score:", runs, "runs on", hits, "hits"))
    #  }
-    
+    box <- rbind(box, cbind(result$box_score), inning = inn))
   }
   
   return(runs)
