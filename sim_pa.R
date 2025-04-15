@@ -1,3 +1,5 @@
+library(tidyverse)
+
 season_2024 <- read.csv("season_2024.csv")
 
 # Have user read data into R outside the function
@@ -77,13 +79,13 @@ sim_pa <- function(bat = "Jarren Duran", pit = "Griffin Canning",
       print(paste(bat, "struck out against", pit))
     }
     else if (result == "In Play, Out") {
-      print(paste(bat, "gets out against", pit))
+      print(paste(bat, "hits into an out against", pit))
     }
     else if (result == "Walk") {
       print(paste(bat, "takes a walk against", pit))
     }
     else {
-      print(paste(bat, "hits a", result, "against", pit))
+      print(paste(bat, "hits a", tolower(result), "against", pit))
     }
     
   }

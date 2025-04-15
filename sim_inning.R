@@ -1,16 +1,16 @@
 library(tidyverse)
 
 cubs_lineup <- c("Ian Happ", "Seiya Suzuki", "Kyle Tucker", 
-            "Michael Busch", "Dansby Swanson", "Miguel Amaya", 
-            "Pete Crow-Armstrong", "Nico Hoerner", "Justin Turner")
+                 "Michael Busch", "Dansby Swanson", "Miguel Amaya", 
+                 "Pete Crow-Armstrong", "Nico Hoerner", "Justin Turner")
 
 yanks_lineup <- c("Austin Wells", "Juan Soto", "Aaron Judge",
                   "Giancarlo Stanton", "Anthony Rizzo", "Gleyber Torres",
                   "Alex Verdugo", "Anthony Volpe", "Oswald Cabrera")
 
 dodgers_lineup <- c("Mookie Betts", "Shohei Ohtani", "Freddie Freeman", 
-                           "Teoscar Hernandez", "Tommy Edman", "Will Smith",
-                           "James Outman", "Max Muncy", "Chris Taylor")
+                    "Teoscar Hernandez", "Tommy Edman", "Will Smith",
+                    "James Outman", "Max Muncy", "Chris Taylor")
 
 cubs <- tibble(cubs_lineup)
 
@@ -33,20 +33,23 @@ sim_inning <- function (lineup = "Aaron Judge", pit = "Paul Skenes", spot = 1) {
   third <- 0
   runs <- 0
   hits <- 0
-  box_score <- <UPDATE THIS TO CREATE OBJECT WITH NULL FOR EACH VARIABLE>
-            
-  if (length(lineup < 9)) {
-    lineup <- rep(lineup, length.out = 9)
-  }
+  hr <- 0
+  box_score <- NULL
+    
+    if (length(lineup < 9)) {
+      lineup <- rep(lineup, length.out = 9)
+    }
   
   while(out < 3) {
-    pa <- sim_pa(bat = lineup[spot], pit = pit, print = "none")
+    pa <- sim_pa(bat = lineup[spot], pit = pit, print = "result")
     pas <- pas + 1
     box_score <- rbind(box_score,
-            data.frame(pa = pas,
-                      pitcher = pit,
-                      hitter = lineup[spot],
-                      result = pa))
+                       data.frame(pa = pas,
+                                  pitcher = pit,
+                                  hitter = lineup[spot],
+                                  result = pa))
+    
+    
     results[pas] <- pas
     
     # Adding Outs
@@ -186,9 +189,12 @@ sim_inning <- function (lineup = "Aaron Judge", pit = "Paul Skenes", spot = 1) {
       hits <- hits + 1
     }
     
+    if (pa == "Home Run")
+      hr <- hr + 1
+    
   }
   
-
+  
   #print(paste("Plate Appearances: ", pas))
   #print(paste("Runs: ", runs))
   #print(paste("First: ", first))
@@ -201,11 +207,13 @@ sim_inning <- function (lineup = "Aaron Judge", pit = "Paul Skenes", spot = 1) {
   # Hides the output and instead, just prints the result of the inning
   invisible(list(box_score = box_score,
                  hits = hits, 
+                 hr = hr,
                  runs = runs, 
                  due_up = lineup[spot],
                  spot = spot))
   
 }
 
-sim_inning(lineup = cubs_lineup, pit = "Sonny Gray")
+output <- sim_inning(lineup = cubs_lineup, pit = "Sonny Gray")
+output$box_score
 
