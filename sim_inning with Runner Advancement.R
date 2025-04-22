@@ -37,10 +37,10 @@ sim_inning <- function (lineup = "Aaron Judge", pit = "Paul Skenes", spot = 1,
   hr <- 0
   bb <- 0
   box_score <- NULL
-    
-    if (length(lineup < 9)) {
-      lineup <- rep(lineup, length.out = 9)
-    }
+  
+  if (length(lineup < 9)) {
+    lineup <- rep(lineup, length.out = 9)
+  }
   
   while(out < 3) {
     pa <- sim_pa(bat = lineup[spot], pit = pit, print = print)
@@ -72,30 +72,65 @@ sim_inning <- function (lineup = "Aaron Judge", pit = "Paul Skenes", spot = 1,
     # Adding Singles
     if (pa == "Single") {
       if (first == 1 & second == 1 & third == 1) {
-        second <- 1
-        third <- 1
-        runs <- runs + 1
+        if (runif(1) < .8) {
+          runs <- runs + 2
+          second <- 0
+          third <- 1
+        } else{
+          second <- 1
+          third <- 1
+          runs <- runs + 1
+        }
       } else if (first == 1 & second == 1) {
-        second <- 1
-        third <- 1
+        if (runif(1) < 0.8) {
+          runs <- runs + 1
+          second <- 0
+          third <- 1
+        } else{
+          second <- 1
+          third <- 1
+        }
       } else if (first == 1 & third == 1) {
-        second <- 1
-        third <- 0
-        runs <- runs + 1
+        if (runif(1) < 0.8) {
+          runs <- runs + 1
+          third <- 1
+        } else{
+          second <- 1
+          third <- 0
+          runs <- runs + 1
+        }
       } else if (second == 1 & third == 1) {
-        second <- 0
-        third <- 1
-        runs <- runs + 1
+        if (runif(1) < 0.8) {
+          runs <- runs + 2
+          second <- 0
+          third <- 0
+        } else{
+          second <- 0
+          third <- 1
+          runs <- runs + 1
+        }
       } else if (second == 1) {
-        second <- 0
-        third <- 1
-      } else if (third == 1){
-        second <- 0
-        third <- 0
-        runs <- runs +1
+        if (runif(1) < 0.8) {  # 80% chance to score
+          runs <- runs + 1
+          second <- 0
+        } else {
+          third <- 1
+          second <- 0
+        }
+      } else if (third == 1) {
+        if (runif(1) < 0.95) {
+          runs <- runs + 1
+          third <- 0
+        } else {
+          third <- 1  # stayed
+        }
       } else if (first == 1) {
-        second <- 0
-        third <- 1
+        if (runif(1) < 0.75) {
+          second <- 1
+        } else {
+          third <- 1
+        }
+        first <- 0
       }
       first <- 1
       
@@ -131,31 +166,72 @@ sim_inning <- function (lineup = "Aaron Judge", pit = "Paul Skenes", spot = 1,
     # Adding Doubles
     if (pa == "Double") {
       if (first == 1 & second == 1 & third == 1) {
+        runs <- runs + 2  # Assume third and second score
+        if (runif(1) < 0.8) {
+          runs <- runs + 1  # 80% chance runner from first scores
+        } else {
+          third <- 1
+        }
         first <- 0
-        third <- 1
-        runs <- runs + 2
+        second <- 0
+        
       } else if (first == 1 & second == 1) {
+        if (runif(1) < 0.6) {
+          runs <- runs + 1  # runner from second scores
+        } else {
+          third <- 1
+        }
+        if (runif(1) < 0.8) {
+          runs <- runs + 1  # runner from first scores
+        } else {
+          third <- 1  # or already set, but leave for clarity
+        }
         first <- 0
-        third <- 1
-        runs <- runs + 1
+        second <- 0
+        
       } else if (first == 1 & third == 1) {
+        runs <- runs + 1  # runner from third scores
+        if (runif(1) < 0.8) {
+          runs <- runs + 1
+        } else {
+          third <- 1
+        }
         first <- 0
-        third <- 1
-        runs <- runs + 1
+        
       } else if (second == 1 & third == 1) {
-        first <- 0
-        third <- 0
-        runs <- runs + 2
-      } else if (second == 1 | third == 1) {
-        first <- 0
-        third <- 0
+        runs <- runs + 1  # runner from third scores
+        if (runif(1) < 0.6) {
+          runs <- runs + 1
+        } else {
+          third <- 1
+        }
+        second <- 0
+        
+      } else if (second == 1) {
+        if (runif(1) < 0.6) {
+          runs <- runs + 1
+        } else {
+          third <- 1
+        }
+        second <- 0
+        
+      } else if (third == 1) {
         runs <- runs + 1
+        third <- 0
+        
       } else if (first == 1) {
+        if (runif(1) < 0.8) {
+          runs <- runs + 1
+        } else {
+          third <- 1
+        }
         first <- 0
-        third <- 1
       }
+      
+      # Batter takes second
       second <- 1
     }
+    
     
     # Adding Triples
     if (pa == "Triple") {
