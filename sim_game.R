@@ -1,15 +1,15 @@
 library(tidyverse)
 
-spot <- 1
-hits <- 0
-runs <- 0
-hr <- 0
-bb <- 0
-box <- NULL
-  
 sim_game <- function (lineup = cubs_lineup, pitcher = "Sonny Gray", 
                       box_score = TRUE, playByPlay = FALSE,
                       print = "none"){
+  
+  spot <- 1
+  hits <- 0
+  runs <- 0
+  hr <- 0
+  bb <- 0
+  box <- NULL
     
   for (inn in 1:9) {
     result <- sim_inning(lineup = lineup, pit = pitcher, spot = spot, print = print)
@@ -37,10 +37,15 @@ sim_game <- function (lineup = cubs_lineup, pitcher = "Sonny Gray",
       bat_box <- box |> 
         summarize(PA = n(),
                 H = sum(result %in% c("Single", "Double", "Triple", "Home Run")),
+                Double = sum(result == "Double"),
+                Triple = sum(result == "Triple"),
                 HR = sum(result == "Home Run"),
                 BB = sum(result == "Walk"),
                 K = sum(result == "Strikeout"),
-                .by = hitter)
+                .by = hitter) |>
+        mutate(AB = PA - BB, 
+               BA = round(H/AB, 3)) |>
+        select(-c(Double,Triple))
       
       pit_box <- box |>
         summarize(BF = n(),
@@ -66,19 +71,5 @@ sim_game <- function (lineup = cubs_lineup, pitcher = "Sonny Gray",
                 bb = bb))
 }
 
-output <- sim_game(playByPlay = TRUE)
-output$box_score
-output$pit_box_score
 
-# output$box_score |>
-#   summarize(pa = n(),
-#             H = sum(result %in% c("Single", "Double", "Triple", "Home Run")),
-#             HR = sum(result == "Home Run"),
-#             BB = sum(result == "Walk"),
-#             k = sum(result == "Strikeout"),
-#             .by = hitter)
-
-distribution <- replicate(100, sim_game())
-table(distribution)
-mean(distribution)
 

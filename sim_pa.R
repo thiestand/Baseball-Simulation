@@ -94,5 +94,4 @@ sim_pa <- function(bat = "Jarren Duran", pit = "Griffin Canning",
   
 }
 
-sim_pa(bat = "Aaron Judge", pit = "Patrick Corbin", print = "result")
 
