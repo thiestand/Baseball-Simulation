@@ -1,0 +1,171 @@
+---
+title: "Exploration"
+author: "Tristan Hiestand"
+date: "2025-09-10"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Load Packages and Data
+
+```{r, message = FALSE}
+library(dplyr)
+library(ggplot2)
+season_2024 <- read.csv("season_2024.csv")
+```
+
+# K Models
+
+### Fit K Models with linear vs quadratic vs interaction terms
+
+```{r}
+kmodel_linear <- glm(k ~ bat_kpct + pit_kpct + samehand + pit_count,
+                    family = binomial,
+                    data = season_2024)
+
+kmodel_quad <- glm(k ~ bat_kpct + pit_kpct + samehand + pit_count + I(pit_count^2),
+                  family = binomial,
+                  data = season_2024)
+
+kmodel_inter <- glm(k ~ bat_kpct + pit_kpct + samehand + pit_kpct*pit_count,
+                  family = binomial,
+                  data = season_2024)
+```
+
+### Creating a Pitch Count Data Frame for Ks
+
+```{r}
+newdat_k <- expand.grid(
+  bat_kpct = mean(season_2024$bat_kpct, na.rm = TRUE),
+  pit_kpct = mean(season_2024$pit_kpct, na.rm = TRUE),
+  samehand = "yes",
+  pit_count = seq(min(season_2024$pit_count, na.rm = TRUE),
+                  max(season_2024$pit_count, na.rm = TRUE))
+)
+```
+
+### Visualizng the Difference
+
+```{r}
+newdat_k$linear <- predict(kmodel_linear, newdata = newdat_k, type = "response")
+newdat_k$quad   <- predict(kmodel_quad,   newdata = newdat_k, type = "response")
+newdat_k$inter   <- predict(kmodel_inter,   newdata = newdat_k, type = "response")
+
+
+ggplot(newdat_k, aes(x = pit_count)) +
+  geom_line(aes(y = linear, color = "Linear")) +
+  geom_line(aes(y = quad, color = "Quadratic"), linetype = "dashed") +
+  geom_line(aes(y = inter, color = "Interaction"), linetype = "dashed") +
+  labs(y = "Predicted K Probability",
+       x = " Pitch Count",
+       color = "Model Type") +
+  theme_minimal() +
+  scale_y_continuous(limits = c(0, .4))
+```
+
+# HR Models
+
+### Fit HR Models with linear vs quadratic vs interaction terms
+
+```{r}
+hrmodel_linear <- glm(hr ~ bat_HRpct + pit_HRpct + samehand + pit_count,
+                family = binomial, 
+                data = season_2024)
+hrmodel_quad <- glm(hr ~ bat_HRpct + pit_HRpct + samehand + I(pit_count^2),
+                family = binomial, 
+                data = season_2024)
+
+hrmodel_inter <- glm(hr ~ bat_HRpct + pit_HRpct + samehand + pit_HRpct*pit_count,
+                  family = binomial,
+                  data = season_2024)
+```
+
+### Creating a Pitch Count Data Frame HR
+
+```{r}
+newdat_hr <- expand.grid(
+  bat_HRpct = mean(season_2024$bat_HRpct, na.rm = TRUE),
+  pit_HRpct = mean(season_2024$pit_HRpct, na.rm = TRUE),
+  samehand = "yes",
+  pit_count = seq(min(season_2024$pit_count, na.rm = TRUE),
+                  max(season_2024$pit_count, na.rm = TRUE))
+)
+```
+
+### Visualizng the Difference with HR
+
+```{r}
+newdat_hr$linear <- predict(hrmodel_linear, newdata = newdat_hr, type = "response")
+newdat_hr$quad   <- predict(hrmodel_quad,   newdata = newdat_hr, type = "response")
+newdat_hr$inter   <- predict(hrmodel_inter,   newdata = newdat_hr, type = "response")
+
+
+ggplot(newdat_hr, aes(x = pit_count)) +
+  geom_line(aes(y = linear, color = "Linear")) +
+  geom_line(aes(y = quad, color = "Quadratic"), linetype = "dashed") +
+  geom_line(aes(y = inter, color = "Interaction", linetype = "dashed")) +
+  labs(y = "Predicted HR Probability",
+       x = " Pitch Count",
+       color = "Model Type") +
+  theme_minimal() +
+  scale_y_continuous(limits = c(0, .10))
+```
+
+
+# Free Base Models
+
+### Fit Free Base Models with linear vs quadratic terms
+
+```{r}
+fbmodel_linear <- glm(free_base ~ bat_fbpct + pit_fbpct + samehand + pit_count,
+                    family = binomial,
+                    data = season_2024)
+
+fbmodel_quad <- glm(free_base ~ bat_fbpct + pit_fbpct + samehand + pit_count + I(pit_count^2),
+                  family = binomial,
+                  data = season_2024)
+
+fbmodel_inter <- glm(free_base ~ bat_fbpct + pit_fbpct + samehand + pit_fbpct*pit_count,
+                  family = binomial,
+                  data = season_2024)
+```
+
+### Creating a Pitch Count Data Frame for Ks
+
+```{r}
+newdat_fb <- expand.grid(
+  bat_fbpct = mean(season_2024$bat_fbpct, na.rm = TRUE),
+  pit_fbpct = mean(season_2024$pit_fbpct, na.rm = TRUE),
+  samehand = "yes",
+  pit_count = seq(min(season_2024$pit_count, na.rm = TRUE),
+                  max(season_2024$pit_count, na.rm = TRUE))
+)
+```
+
+### Visualizng the Difference
+
+```{r}
+newdat_fb$linear <- predict(fbmodel_linear, newdata = newdat_fb, type = "response")
+newdat_fb$quad   <- predict(fbmodel_quad,   newdata = newdat_fb, type = "response")
+newdat_fb$inter   <- predict(fbmodel_inter,   newdata = newdat_fb, type = "response")
+
+
+ggplot(newdat_fb, aes(x = pit_count)) +
+  geom_line(aes(y = linear, color = "Linear")) +
+  geom_line(aes(y = quad, color = "Quadratic"), linetype = "dashed") +
+  geom_line(aes(y = inter, color = "Interaction"), linetype = "dashed") +
+  labs(y = "Predicted Free Base Probability",
+       x = " Pitch Count",
+       color = "Model Type") +
+  theme_minimal() +
+  scale_y_continuous(limits = c(0, .10))
+```
+
+
+
+
+
+
