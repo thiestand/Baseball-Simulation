@@ -1,6 +1,7 @@
 library(tidyverse)
 
-sim_game <- function (lineup = cubs_lineup, pitcher = "Sonny Gray", 
+sim_game <- function (lineup = cubs_lineup, current_pitcher = "Sonny Gray", 
+                      bullpen = c("Edwin Diaz", "Kenley Jansen", "Josh Hader"),
                       box_score = TRUE, playByPlay = FALSE,
                       print = "none"){
   
@@ -12,7 +13,15 @@ sim_game <- function (lineup = cubs_lineup, pitcher = "Sonny Gray",
   box <- NULL
     
   for (inn in 1:9) {
-    result <- sim_inning(lineup = lineup, pit = pitcher, spot = spot, print = print)
+    
+    current_pitcher <- case_when(
+      inn == 7 ~ bullpen[1],
+      inn == 8 ~ bullpen[2],
+      inn == 9 ~ bullpen[3],
+      TRUE ~ current_pitcher
+    )
+    
+    result <- sim_inning(lineup = lineup, pit = current_pitcher, spot = spot, print = print)
     runs <- runs + result$runs
     hits <- hits + result$hits
     hr <- hr + result$hr

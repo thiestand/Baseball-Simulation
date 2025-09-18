@@ -72,12 +72,12 @@ sim_inning <- function (lineup = "Aaron Judge", pit = "Paul Skenes", spot = 1,
     # }
     
     adv <- advance_runners(pa, bases)
-    runs <- adv$runs
+    runs <- adv$runs + runs
     bases <- adv$bases
     
     spot <- ifelse(spot < 9, spot + 1, 1)
     
-    if (pa == "Single" | pa == "Double" | pa == "Triple" | pa == "Home Run") {
+    if (pa %in% c("Single", "Double", "Triple", "Home Run")) {
       hits <- hits + 1
     }
     
