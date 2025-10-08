@@ -1,0 +1,40 @@
+"result","names","coefs"
+"K","(Intercept)",-4.05573366924427
+"K","bat_kpct",5.6728425165803
+"K","pit_kpct",5.94201715999576
+"K","samehandyes",0.0819615371182204
+"K","pit_count",0.00786955018756835
+"K","I(pit_count^2)",-8.93471497932961e-05
+"Walk","(Intercept)",-4.46976486125197
+"Walk","bat_fbpct",11.148333028524
+"Walk","pit_fbpct",10.7221313491312
+"Walk","samehandyes",-0.164603819632533
+"Walk","pit_count",0.00872476788754551
+"Walk","I(pit_count^2)",-8.29015844621876e-05
+"Home Run","(Intercept)",-5.26591339638745
+"Home Run","bat_HRpct",31.2567293655746
+"Home Run","pit_HRpct",23.9580132296538
+"Home Run","samehandyes",-0.115512513030507
+"Home Run","I(pit_count^2)",7.85156983557589e-06
+"Single","(Intercept)",-4.1808011927591
+"Single","bat_1Bpct",8.37994598118906
+"Single","pit_1Bpct",8.23039835538077
+"Single","samehandyes",0.0111848931360855
+"Single","pit_count",-0.00190099906435895
+"Single","I(pit_count^2)",3.27292812143047e-05
+"In Play, Out","(Intercept)",-3.87364520424844
+"In Play, Out","bat_ipoutpct",4.09250069327809
+"In Play, Out","pit_ipoutpct",4.08861391827263
+"In Play, Out","samehandyes",0.0251313837677161
+"In Play, Out","pit_count",-0.00587695116646981
+"In Play, Out","I(pit_count^2)",6.00108225821946e-05
+"Triple","(Intercept)",-7.11790106363888
+"Triple","bat_3Bpct",145.262660813113
+"Triple","pit_3Bpct",121.478462332819
+"Triple","samehandyes",0.00544490540051083
+"Triple","pit_count",0.00274369727134281
+"Double","(Intercept)",-4.8753957940189
+"Double","bat_2Bpct",23.1331380947861
+"Double","pit_2Bpct",17.6007662643844
+"Double","samehandyes",-0.0892128000307032
+"Double","pit_count",0.000174456568134964
