@@ -1,42 +1,73 @@
-library(tidyverse)
-
-season_2024 <- read.csv("season_2024.csv")
-
-# Have user read data into R outside the function
-# Include an argument to read the data in
-
-batters <- read.csv("https://raw.githubusercontent.com/thiestand/Baseball-Simulation/refs/heads/main/batter_data.csv")
-pitchers <- read.csv("https://raw.githubusercontent.com/thiestand/Baseball-Simulation/refs/heads/main/pitcher_data.csv")
-
-sim_pa <- function(bat = "Jarren Duran", pit = "Griffin Canning", 
+sim_pa <- function(bat = "Jarren Duran", pit = "Griffin Canning", pit_count = 1,
                    bat_data = batters, pit_data = pitchers,
                    print = "none") {
+  require(dplyr)
   
   batter <- filter(bat_data, name == bat)
   pitcher <- filter(pit_data, name == pit)
   
+  # K Prediction
   samehand <- batter$bathand == pitcher$pithand
+  vals <- c(1, batter$bat_kpct, pitcher$pit_kpct, samehand, pit_count, pit_count^2)
+  coefs <- filter(model_coef, result == "K")$coefs
+  pred_k <- exp(sum(vals*coefs))/(1-exp(sum(vals*coefs)))
   
-  pred_k <- -3.92052 + 5.73134*batter$bat_kpct + 5.75805*pitcher$pit_kpct + 0.07522*samehand
-  pred_k <- exp(pred_k) / (1 + exp(pred_k))
+  #pred_k <- -3.92052 + 5.73134*batter$bat_kpct + 5.75805*pitcher$pit_kpct + 0.07522*samehand
+  #pred_k <- exp(pred_k) / (1 + exp(pred_k))
   
-  pred_fb <- -4.29556 + 11.11392*batter$bat_fbpct + 10.38869 *pitcher$pit_fbpct - 0.16132*samehand
-  pred_fb <- exp(pred_fb) / (1 + exp(pred_fb))
+  # Free Base Prediction
+  samehand <- batter$bathand == pitcher$pithand
+  vals_fb <- c(1, batter$bat_fbpct, pitcher$pit_fbpct, samehand, pit_count, pit_count^2)
+  coefs_fb <- filter(model_coef, result == "Walk")$coefs
+  pred_fb <- exp(sum(vals_fb*coefs_fb))/(1-exp(sum(vals_fb*coefs_fb)))
   
-  pred_1B <- -4.13821  + 8.21707*batter$bat_1Bpct + 7.87822*pitcher$pit_1Bpct + 0.02929*samehand
-  pred_1B <- exp(pred_1B) / (1 + exp(pred_1B))
+  #pred_fb <- -4.29556 + 11.11392*batter$bat_fbpct + 10.38869 *pitcher$pit_fbpct - 0.16132*samehand
+  #pred_fb <- exp(pred_fb) / (1 + exp(pred_fb))
   
-  pred_2B <- -4.86874  + 21.82715*batter$bat_2Bpct + 18.54212*pitcher$pit_2Bpct - 0.08984*samehand
-  pred_2B <- exp(pred_2B) / (1 + exp(pred_2B))
+  # Single Prediction
+  samehand <- batter$bathand == pitcher$pithand
+  vals_1b <- c(1, batter$bat_1Bpct, pitcher$pit_1Bpct, samehand, pit_count, pit_count^2)
+  coefs_1b <- filter(model_coef, result == "Single")$coefs
+  pred_1B <- exp(sum(vals_1b*coefs_1b))/(1-exp(sum(vals_1b*coefs_1b)))
   
-  pred_3B <- -6.85267  + 131.42274*batter$bat_3Bpct + 112.69379*pitcher$pit_3Bpct - 0.12138*samehand
-  pred_3B <- exp(pred_3B) / (1 + exp(pred_3B))
+  #pred_1B <- -4.13821  + 8.21707*batter$bat_1Bpct + 7.87822*pitcher$pit_1Bpct + 0.02929*samehand
+  #pred_1B <- exp(pred_1B) / (1 + exp(pred_1B))
   
-  pred_HR <- -5.16375  + 30.62259*batter$bat_HRpct + 22.53312*pitcher$pit_HRpct - 0.13722*samehand
-  pred_HR <- exp(pred_HR) / (1 + exp(pred_HR))
+  # Double Prediction
+  samehand <- batter$bathand == pitcher$pithand
+  vals_2b <- c(1, batter$bat_2Bpct, pitcher$pit_2Bpct, samehand, pit_count)
+  coefs_2b <- filter(model_coef, result == "Double")$coefs
+  pred_2B <- exp(sum(vals_2b*coefs_2b))/(1-exp(sum(vals_2b*coefs_2b)))
   
-  pred_ipout <- -3.966211  + 4.095392*batter$bat_ipoutpct + 4.122515*pitcher$pit_ipoutpct + 0.019550*samehand
-  pred_ipout <- exp(pred_ipout) / (1 + exp(pred_ipout))
+  #pred_2B <- -4.86874  + 21.82715*batter$bat_2Bpct + 18.54212*pitcher$pit_2Bpct - 0.08984*samehand
+  #pred_2B <- exp(pred_2B) / (1 + exp(pred_2B))
+  
+  # Triple Prediction
+  samehand <- batter$bathand == pitcher$pithand
+  vals_3b <- c(1, batter$bat_3Bpct, pitcher$pit_3Bpct, samehand, pit_count)
+  coefs_3b <- filter(model_coef, result == "Triple")$coefs
+  pred_3B <- exp(sum(vals_3b*coefs_3b))/(1-exp(sum(vals_3b*coefs_3b)))
+  
+  #pred_3B <- -6.85267  + 131.42274*batter$bat_3Bpct + 112.69379*pitcher$pit_3Bpct - 0.12138*samehand
+  #pred_3B <- exp(pred_3B) / (1 + exp(pred_3B))
+  
+  # Home Run Prediction
+  samehand <- batter$bathand == pitcher$pithand
+  vals_hr <- c(1, batter$bat_HRpct, pitcher$pit_HRpct, samehand, pit_count, pit_count^2)
+  coefs_hr <- filter(model_coef, result == "Home Run")$coefs
+  pred_HR <- exp(sum(vals_hr*coefs_hr))/(1-exp(sum(vals_hr*coefs_hr)))
+  
+  #pred_HR <- -5.16375  + 30.62259*batter$bat_HRpct + 22.53312*pitcher$pit_HRpct - 0.13722*samehand
+  #pred_HR <- exp(pred_HR) / (1 + exp(pred_HR))
+  
+  # In Play, Out Prediction
+  samehand <- batter$bathand == pitcher$pithand
+  vals_ipout <- c(1, batter$bat_ipoutpct, pitcher$pit_ipoutpct, samehand, pit_count, pit_count^2)
+  coefs_ipout <- filter(model_coef, result == "In Play, Out")$coefs
+  pred_ipout <- exp(sum(vals_ipout*coefs_ipout))/(1-exp(sum(vals_ipout*coefs_ipout)))
+  
+  #pred_ipout <- -3.966211  + 4.095392*batter$bat_ipoutpct + 4.122515*pitcher$pit_ipoutpct + 0.019550*samehand
+  #pred_ipout <- exp(pred_ipout) / (1 + exp(pred_ipout))
   
   
   pred_total <- pred_k + pred_fb + pred_1B + pred_2B + pred_3B + pred_HR + pred_ipout

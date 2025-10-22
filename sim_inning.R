@@ -1,7 +1,8 @@
-library(tidyverse)
-
-sim_inning <- function (lineup = "Aaron Judge", pit = "Paul Skenes", spot = 1,
+sim_inning <- function (batters = "Aaron Judge", pit = "Paul Skenes", spot = 1,
                         print = "none") {
+  require(dplyr)
+  source("advance_runners.R")
+  
   pas <- 0
   out <- 0
   results <- NULL
@@ -12,17 +13,17 @@ sim_inning <- function (lineup = "Aaron Judge", pit = "Paul Skenes", spot = 1,
   bb <- 0
   box_score <- NULL
   
-  if (length(lineup < 9)) {
-    lineup <- rep(lineup, length.out = 9)
+  if (length(batters < 9)) {
+    batters <- rep(batters, length.out = 9)
   }
   
   while(out < 3) {
-    pa <- sim_pa(bat = lineup[spot], pit = pit, print = print)
+    pa <- sim_pa(bat = batters[spot], pit = pit, print = print)
     pas <- pas + 1
     box_score <- rbind(box_score,
                        data.frame(pa = pas,
                                   pitcher = pit,
-                                  hitter = lineup[spot],
+                                  hitter = batters[spot],
                                   result = pa))
     
     
@@ -98,7 +99,7 @@ sim_inning <- function (lineup = "Aaron Judge", pit = "Paul Skenes", spot = 1,
                  hr = hr,
                  bb = bb,
                  runs = runs, 
-                 due_up = lineup[spot],
+                 due_up = batters[spot],
                  spot = spot,
                  bases = bases))
   

@@ -1,9 +1,8 @@
-library(tidyverse)
-
-sim_game <- function (lineup = cubs_lineup, current_pitcher = "Sonny Gray", 
+sim_game <- function (lineup = lineup$Cubs, current_pitcher = "Sonny Gray", 
                       bullpen = c("Edwin Diaz", "Kenley Jansen", "Josh Hader"),
                       box_score = TRUE, playByPlay = FALSE,
                       print = "none"){
+  require(dplyr)
   
   spot <- 1
   hits <- 0
@@ -21,7 +20,7 @@ sim_game <- function (lineup = cubs_lineup, current_pitcher = "Sonny Gray",
       TRUE ~ current_pitcher
     )
     
-    result <- sim_inning(lineup = lineup, pit = current_pitcher, spot = spot, print = print)
+    result <- sim_inning(batters = lineup, pit = current_pitcher, spot = spot, print = print)
     runs <- runs + result$runs
     hits <- hits + result$hits
     hr <- hr + result$hr
