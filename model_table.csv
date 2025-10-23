@@ -11,11 +11,12 @@
 "Walk","samehandyes",-0.164603819632533
 "Walk","pit_count",0.00872476788754551
 "Walk","pit_count_sq",-8.29015844621876e-05
-"Home Run","(Intercept)",-5.26591339638745
-"Home Run","bat_HRpct",31.2567293655746
-"Home Run","pit_HRpct",23.9580132296538
-"Home Run","samehandyes",-0.115512513030507
-"Home Run","pit_count_sq",7.85156983557589e-06
+"Home Run","(Intercept)",-5.20555860006495
+"Home Run","bat_HRpct",31.2116899385883
+"Home Run","pit_HRpct",24.0552699649218
+"Home Run","samehandyes",-0.118134345430015
+"Home Run","pit_count",-0.00446916601491573
+"Home Run","pit_count_sq",5.58440226583085e-05
 "Single","(Intercept)",-4.1808011927591
 "Single","bat_1Bpct",8.37994598118906
 "Single","pit_1Bpct",8.23039835538077
