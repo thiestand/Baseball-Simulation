@@ -2,6 +2,7 @@ sim_inning <- function (batters = "Aaron Judge", pit = "Paul Skenes", spot = 1,
                         print = "none") {
   require(dplyr)
   source("advance_runners.R")
+  source("num_pit.R")
   
   pas <- 0
   out <- 0
@@ -11,6 +12,7 @@ sim_inning <- function (batters = "Aaron Judge", pit = "Paul Skenes", spot = 1,
   hits <- 0
   hr <- 0
   bb <- 0
+  pit_count <- 0
   box_score <- NULL
   
   if (length(batters < 9)) {
@@ -20,87 +22,50 @@ sim_inning <- function (batters = "Aaron Judge", pit = "Paul Skenes", spot = 1,
   while(out < 3) {
     pa <- sim_pa(bat = batters[spot], pit = pit, print = print)
     pas <- pas + 1
-    box_score <- rbind(box_score,
-                       data.frame(pa = pas,
-                                  pitcher = pit,
-                                  hitter = batters[spot],
-                                  result = pa))
     
+    results[pas] <- pa
     
-    results[pas] <- pas
+    # Increment pitch count
+    pit_count <- pit_count + num_pit(pa)
     
     rn <- runif(1)
     
-    # Adding Outs
-    if (pa == "In Play, Out" | pa == "Strikeout") {
+    if (pa %in% c("In Play, Out", "Strikeout")) {
       out <- out + 1
     }
-    
-    # Adding Home Runs
-    # if (pa == "Home Run") {
-    #   adv <- advance_runners("Home Run", bases)
-    #   runs <- runs + adv$runs
-    #   bases <- adv$bases
-    # }
-    # 
-    # # Adding Singles
-    # if (pa == "Single") {
-    #   adv <- advance_runners("Single", bases)
-    #   runs <- runs + adv$runs
-    #   bases <- adv$bases
-    # }
-    # 
-    # # Adding Walks
-    # if (pa == "Walk") {
-    #   adv <- advance_runners("Walk", bases)
-    #   runs <- runs + adv$runs
-    #   bases <- adv$bases
-    # }
-    # 
-    # # Adding Doubles
-    # if (pa == "Double") {
-    #   adv <- advance_runners("Double", bases)
-    #   runs <- runs + adv$runs
-    #   bases <- adv$bases
-    # }
-    # 
-    # 
-    # # Adding Triples
-    # if (pa == "Triple") {
-    #   adv <- advance_runners("Triple", bases)
-    #   runs <- runs + adv$runs
-    #   bases <- adv$bases
-    # }
     
     adv <- advance_runners(pa, bases)
     runs <- adv$runs + runs
     bases <- adv$bases
     
+    # Add current PA to box score
+    box_score <- rbind(box_score,
+                       data.frame(
+                         pa = pas,
+                         pitcher = pit,
+                         hitter = batters[spot],
+                         result = pa,
+                         runs = adv$runs,
+                         pitch_count = pit_count
+                       ))
+    
+    # Update counting stats
+    if (pa %in% c("Single", "Double", "Triple", "Home Run")) hits <- hits + 1
+    if (pa == "Home Run") hr <- hr + 1
+    if (pa == "Walk") bb <- bb + 1
+    
     spot <- ifelse(spot < 9, spot + 1, 1)
-    
-    if (pa %in% c("Single", "Double", "Triple", "Home Run")) {
-      hits <- hits + 1
-    }
-    
-    if (pa == "Home Run") {
-      hr <- hr + 1 
-    }
-    
-    if (pa == "Walk") {
-      bb <- bb + 1
-    }
-    
   }
   
-  
-  # Hides the output and instead, just prints the result of the inning
-  invisible(list(box_score = box_score,
-                 hits = hits, 
-                 hr = hr,
-                 bb = bb,
-                 runs = runs, 
-                 due_up = batters[spot],
-                 spot = spot,
-                 bases = bases))
-  
+  invisible(list(
+    box_score = box_score,
+    hits = hits, 
+    hr = hr,
+    bb = bb,
+    runs = runs, 
+    due_up = batters[spot],
+    spot = spot,
+    bases = bases,
+    pit_count = pit_count
+  ))
 }
