@@ -1,4 +1,4 @@
-sim_game <- function (lineup = lineup$Cubs, current_pitcher = "Sonny Gray", 
+sim_game <- function (lineup = lineups$Cubs, starter = "Sonny Gray", 
                       bullpen = c("Edwin Diaz", "Kenley Jansen", "Josh Hader"),
                       box_score = TRUE, playByPlay = FALSE,
                       print = "none"){
@@ -17,7 +17,7 @@ sim_game <- function (lineup = lineup$Cubs, current_pitcher = "Sonny Gray",
       inn == 7 ~ bullpen[1],
       inn == 8 ~ bullpen[2],
       inn == 9 ~ bullpen[3],
-      TRUE ~ current_pitcher
+      TRUE ~ starter
     )
     
     result <- sim_inning(batters = lineup, pit = current_pitcher, spot = spot, print = print)
@@ -56,13 +56,18 @@ sim_game <- function (lineup = lineup$Cubs, current_pitcher = "Sonny Gray",
         select(-c(Double,Triple))
       
       pit_box <- box |>
-        summarize(BF = n(),
-                  H = sum(result %in% c("Single", "Double", "Triple", "Home Run")),
-                  R = sum(runs),
-                  BB = sum(result == "Walk"),
-                  K = sum(result == "Strikeout"),
-                  HR = sum(result == "Home Run"),
-                  .by = pitcher)
+        group_by(pitcher) |>
+        summarize(
+          BF = n(),
+          PC = sum(pitch_count, na.rm = TRUE),
+          H = sum(result %in% c("Single", "Double", "Triple", "Home Run")),
+          R = sum(runs),
+          BB = sum(result == "Walk"),
+          K = sum(result == "Strikeout"),
+          HR = sum(result == "Home Run"),
+          .groups = "drop"
+        )
+      
       
       box_list <- list(bat_box, pit_box)
       
