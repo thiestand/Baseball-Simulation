@@ -22,16 +22,17 @@ bio_data <- bio_data |>
 useful_2024 <- csv_2024 %>%
   filter(gametype == "regular",
          pa == 1) %>%
-  select("ab", "pa", "batter", "pitcher", "single" : "walk", "k", "bathand", "pithand") |>
-  rename(playerid = batter,
-         playerid = pitcher)
+  select("gid", "ab", "pa", "batter", "pitcher", "single" : "walk", "k", "bathand", "pithand", "nump")
 
 percentages_added <- useful_2024 %>%
   mutate(bat_pa = n(), bat_kpct = sum(k) / bat_pa, 
          .by = batter) %>%
   mutate(pit_pa = n(), pit_kpct = sum(k) / pit_pa, 
          .by = pitcher) %>%
-  mutate(samehand = ifelse(bathand == pithand, "yes", "no"))
+  mutate(samehand = ifelse(bathand == pithand, "yes", "no")) |>
+  mutate(pit_count = cumsum(nump),
+         pa_count = cumsum(pa),
+         .by = c(pitcher, gid))
 
 ## Writing the CSV
 write.csv(percentages_added, 
@@ -82,9 +83,19 @@ batter <- season_2024 |>
             bat_pa = n(),
             .by = c(batter, bathand))
 
-#batter <- batter |>
-#   left_join(bio_data, by = join_by(playerid))
-  
+batter <- batter |>
+  left_join(bio_data, by = join_by(batter == playerid)) |>
+  mutate(name = paste(nickname, last))
+
+batter <- batter |>
+  mutate(hand = ifelse(bathand == "B", 1, 0)) |>
+  group_by(batter) |>
+  slice_max(order_by = hand, n = 1, with_ties = FALSE) |>
+  ungroup() |>
+  select(-hand)
+
+any(duplicated(batter$batter))
+
 write.csv(batter, 
           "batter_data.csv", 
           row.names=FALSE)
@@ -101,11 +112,21 @@ pitcher <- season_2024 |>
             pit_pa = n(),
             .by = c(pitcher, pithand))
 
-# pitcher <- pitcher |>
-#  left_join(bio_data, by = join_by(pitcher))
+pitcher <- pitcher |>
+  left_join(bio_data, by = join_by(pitcher == playerid)) |>
+  mutate(name = paste(nickname, last))
+  
 
 write.csv(pitcher, 
           "pitcher_data.csv", 
           row.names=FALSE)
 
+
+# filter(csv_2024, batteam == "TBA") |> 
+#   summarize(n = n(), .by = c(lp, batter)) |> 
+#   slice_max(order_by = n, by = lp, n = 1)
+
+batters <- read.csv("batter_data.csv")
+pitchers <- read.csv("pitcher_data.csv")
+model_coef <- read.csv("model_table.csv")
 
